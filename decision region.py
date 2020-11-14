@@ -4,15 +4,21 @@ from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 import os
-df = pd.read_csv(os.path.abspath('python_code/dataset.csv'),header=None)
-y = df.iloc[:960, 11].values #class 1과 0의 비율을 1:1로 하기 위해 960개의 데이터만 가져옴
-X = df.iloc[:960, [2,6]].values #SBS에서 가장 정확도가 높았던 두 개의 feature
+from sklearn.utils import resample
+df = pd.read_csv(os.path.abspath('dataset.csv'),header=None)
+y = df.iloc[:, 11].values
+X = df.iloc[:, :11].values
+X = df.iloc[:, [2, 4]].values #SBS에서 가장 정확도가 높았던 두 개의 feature
+# class 1과 0의 비율을 1:1로 upsampling함. 총 9040개의 데이터를 사용함.
+X_upsampled, y_upsampled = resample(X[y == 1], y[y == 1], replace=True, n_samples=X[y == 0].shape[0], random_state=1)
+X = np.vstack((X[y==0], X_upsampled))
+y = np.hstack((y[y==0], y_upsampled))
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1, stratify=y) #30% test set
 
 from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors=3, p=2, metric='minkowski')
+knn = KNeighborsClassifier(n_neighbors=5, p=2, metric='minkowski')
 
 from sklearn.linear_model import LogisticRegression
 lr = LogisticRegression(solver='liblinear', penalty='l2', C=1, random_state=1)
@@ -59,9 +65,9 @@ for idx, clf, tt in zip(product([0, 1], [0, 1]), all_clf, clf_labels):
     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     axarr[idx[0], idx[1]].contourf(xx, yy, Z, alpha = 0.3)
-    axarr[idx[0], idx[1]].scatter(X_train_std[y_train == 0, 0], X_train_std[y_train == 0, 1], c='blue', marker='^', s=50)
-    axarr[idx[0], idx[1]].scatter(X_train_std[y_train == 1, 0], X_train_std[y_train == 1, 1], c='green', marker='o', s=50)
+    axarr[idx[0], idx[1]].scatter(X_train_std[y_train == 0, 0], X_train_std[y_train == 0, 1], c='blue', marker='^', s=5)
+    axarr[idx[0], idx[1]].scatter(X_train_std[y_train == 1, 0], X_train_std[y_train == 1, 1], c='green', marker='o', s=5)
     axarr[idx[0], idx[1]].set_title(tt)
     plt.text(-3.5, -3.5, s = 'Feature 3 [standardized]', ha='center', va='center', fontsize=12)
-    plt.text(-11.5, 6.5, s = 'Feature 7 [standardized]', ha='center', va='center', fontsize=12, rotation=90)
+    plt.text(-11.5, 6.5, s = 'Feature 5 [standardized]', ha='center', va='center', fontsize=12, rotation=90)
 plt.show()

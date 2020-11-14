@@ -1,8 +1,14 @@
 import pandas as pd
 import os
-df = pd.read_csv(os.path.abspath('python_code/dataset.csv'),header=None)
-y = df.iloc[:960, 11].values #class 1과 0의 비율을 1:1로 하기 위해 960개의 데이터만 가져옴
-X = df.iloc[:960, :11].values
+from sklearn.utils import resample
+import numpy as np
+df = pd.read_csv(os.path.abspath('dataset.csv'),header=None)
+y = df.iloc[:, 11].values
+X = df.iloc[:, :11].values
+#class 1과 0의 비율을 1:1로 upsampling함. 총 9040개의 데이터를 사용함.
+X_upsampled, y_upsampled = resample(X[y == 1], y[y == 1], replace=True, n_samples=X[y == 0].shape[0], random_state=1)
+X = np.vstack((X[y==0], X_upsampled))
+y = np.hstack((y[y==0], y_upsampled))
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
@@ -10,7 +16,6 @@ X_std = sc.fit_transform(X)
 
 from sklearn.base import clone
 from itertools import combinations
-import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
@@ -68,13 +73,15 @@ sbs = SBS(knn, k_features = 1)
 sbs.fit(X_std, y)
 k_feat = [len(k) for k in sbs.subsets_]
 
-k2 = list(sbs.subsets_[9])
+k2 = list(sbs.subsets_[7])
 print(pd.DataFrame(X).columns[:][k2])
 
 plt.plot(k_feat, sbs.scores_, marker='o')
 plt.ylim([0.8, 1.02])
-plt.ylabel('Accuracy')
-plt.xlabel('Number of features')
+plt.ylabel('Accuracy', fontsize=20)
+plt.xlabel('Number of features', fontsize=20)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
 plt.grid()
 plt.tight_layout()
 plt.show()
