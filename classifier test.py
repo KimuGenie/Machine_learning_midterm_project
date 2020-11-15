@@ -6,7 +6,6 @@ from sklearn.utils import resample
 
 df = pd.read_csv(os.path.abspath('dataset.csv'),header=None)
 y = df.iloc[:, 11].values
-X = df.iloc[:, :11].values
 X = df.iloc[:, [2, 3, 4, 5]].values #SBS에서 가장 정확도가 높았던 네 개의 feature
 # class 1과 0의 비율을 1:1로 upsampling함. 총 9040개의 데이터를 사용함.
 X_upsampled, y_upsampled = resample(X[y == 1], y[y == 1], replace=True, n_samples=X[y == 0].shape[0], random_state=1)
