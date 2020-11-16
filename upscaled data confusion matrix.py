@@ -22,9 +22,13 @@ lr = LogisticRegression(solver='liblinear', penalty='l2', C=1, random_state=1)
 from sklearn.pipeline import Pipeline
 pipelr = Pipeline([['sc', StandardScaler()], ['clf', lr]])
 
-from sklearn.metrics import confusion_matrix
 pipelr.fit(X_train, y_train)
 y_pred = pipelr.predict(X_test)
+
+from sklearn.metrics import roc_auc_score
+print('ROCAUC score: %.3f' % (roc_auc_score(y_test, y_pred)))
+
+from sklearn.metrics import confusion_matrix
 confmat = confusion_matrix(y_true=y_test, y_pred=y_pred)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))

@@ -16,13 +16,13 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1, stratify=y) #30% test set
 
 from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors=5, p=2, metric='minkowski')
+knn = KNeighborsClassifier(n_neighbors=1)
 
 from sklearn.linear_model import LogisticRegression
-lr = LogisticRegression(solver='liblinear', penalty='l2', C=1, random_state=1)
+lr = LogisticRegression(C=1, random_state=1)
 
 from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier(max_depth=3, criterion='entropy', random_state=1)
+tree = DecisionTreeClassifier(max_depth=5, random_state=1)
 
 from sklearn.svm import SVC
 sv = SVC(C=100, gamma=10, random_state=1)

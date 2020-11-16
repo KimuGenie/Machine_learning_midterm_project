@@ -75,10 +75,10 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
 
 ###ensemble classifier###
 from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors=1, p=2, metric='minkowski')
+knn = KNeighborsClassifier(n_neighbors=1)
 
 from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier(max_depth=4, criterion='entropy', random_state=1)
+tree = DecisionTreeClassifier(max_depth=4, random_state=1)
 
 from sklearn.svm import SVC
 sv = SVC(C=10, gamma=100, random_state=1)
